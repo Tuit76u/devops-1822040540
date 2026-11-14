@@ -1,7 +1,28 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   check:
+    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Kiem tra du file
+        run: |
+          if [ ! -f "index.html" ] || [ ! -f "style.css" ] || [ ! -f "script.js" ]; then
+            echo "❌ Thieu file he thong"
+            exit 1
+          fi
+          echo "✅ Du 3 file"
 
       - name: Kiem tra the title
         run: |
@@ -13,7 +34,7 @@ jobs:
 
   # ===== JOB 2: DEPLOY (đây là phần CD) =====
   deploy:
-    needs: check # chỉ chạy khi job check thành công
+    needs: check
     runs-on: ubuntu-latest
     environment:
       name: github-pages
