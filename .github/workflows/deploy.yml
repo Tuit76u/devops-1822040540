@@ -1,0 +1,28 @@
+jobs:
+  check:
+    steps:
+      - name: Kiem tra du file
+
+      - name: Kiem tra the title
+        run: |
+          if ! grep -q "<title>" index.html; then
+            echo "❌ index.html thieu the <title>"
+            exit 1
+          fi
+          echo "✅ Co the title"
+
+  # ===== JOB 2: DEPLOY (đây là phần CD) =====
+  deploy:
+    needs: check # chỉ chạy khi job check thành công
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
